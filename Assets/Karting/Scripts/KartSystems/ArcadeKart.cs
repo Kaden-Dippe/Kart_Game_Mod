@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
 namespace KartGame.KartSystems
@@ -72,7 +73,7 @@ namespace KartGame.KartSystems
         }
 
         public Rigidbody Rigidbody { get; private set; }
-        public InputData Input     { get; private set; }
+        public InputData Input;
         public float AirPercent    { get; private set; }
         public float GroundPercent { get; private set; }
 
@@ -287,7 +288,7 @@ namespace KartGame.KartSystems
             UpdateSuspensionParams(RearLeftWheel);
             UpdateSuspensionParams(RearRightWheel);
 
-            GatherInputs();
+            //GatherInputs();
 
             // apply our powerups to create our finalStats
             TickPowerups();
@@ -309,6 +310,7 @@ namespace KartGame.KartSystems
             GroundPercent = (float) groundedCount / 4.0f;
             AirPercent = 1 - GroundPercent;
 
+            // Input global variable gets set in GatherInputs
             // apply vehicle physics
             if (m_CanMove)
             {
@@ -321,6 +323,7 @@ namespace KartGame.KartSystems
             UpdateDriftVFXOrientation();
         }
 
+        /*
         void GatherInputs()
         {
             // reset input
@@ -333,6 +336,18 @@ namespace KartGame.KartSystems
                 Input = m_Inputs[i].GenerateInput();
                 WantsToDrift = Input.Brake && Vector3.Dot(Rigidbody.velocity, transform.forward) > 0.0f;
             }
+        }
+        */
+
+
+        void OnTurn(InputValue value)
+        {
+            Input.TurnInput = value.Get<Vector2>().x;
+        }
+
+        void OnAccelerate(InputValue value)
+        {
+            Input.Accelerate = InputValue.isPressed;
         }
 
         void TickPowerups()
